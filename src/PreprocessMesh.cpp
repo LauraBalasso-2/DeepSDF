@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include <pangolin/handler/handler.h>
 #include <pangolin/geometry/geometry.h>
 #include <pangolin/geometry/glgeometry.h>
 #include <pangolin/gl/gl.h>
@@ -34,7 +35,7 @@ void SampleFromSurface(
     auto it_vert_indices = object.second.attributes.find("vertex_indices");
     if (it_vert_indices != object.second.attributes.end()) {
       pangolin::Image<uint32_t> ibo =
-          pangolin::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
+          std::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
 
       for (int i = 0; i < ibo.h; ++i) {
         linearized_faces.emplace_back(ibo(0, i), ibo(1, i), ibo(2, i));
@@ -43,7 +44,7 @@ void SampleFromSurface(
   }
 
   pangolin::Image<float> vertices =
-      pangolin::get<pangolin::Image<float>>(geom.buffers["geometry"].attributes["vertex"]);
+      std::get<pangolin::Image<float>>(geom.buffers["geometry"].attributes["vertex"]);
 
   for (const Eigen::Vector3i& face : linearized_faces) {
     float area = TriangleArea(
@@ -337,7 +338,7 @@ int main(int argc, char** argv) {
       auto it_vert_indices = object.second.attributes.find("vertex_indices");
       if (it_vert_indices != object.second.attributes.end()) {
         pangolin::Image<uint32_t> ibo =
-            pangolin::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
+            std::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
 
         total_num_faces += ibo.h;
       }
@@ -355,7 +356,7 @@ int main(int argc, char** argv) {
       auto it_vert_indices = object.second.attributes.find("vertex_indices");
       if (it_vert_indices != object.second.attributes.end()) {
         pangolin::Image<uint32_t> ibo =
-            pangolin::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
+            std::get<pangolin::Image<uint32_t>>(it_vert_indices->second);
 
         for (int i = 0; i < ibo.h; ++i) {
           new_ibo.Row(index).CopyFrom(ibo.Row(i));
@@ -378,7 +379,7 @@ int main(int argc, char** argv) {
   // remove textures
   geom.textures.clear();
 
-  pangolin::Image<uint32_t> modelFaces = pangolin::get<pangolin::Image<uint32_t>>(
+  pangolin::Image<uint32_t> modelFaces = std::get<pangolin::Image<uint32_t>>(
       geom.objects.begin()->second.attributes["vertex_indices"]);
 
   float max_dist = BoundingCubeNormalization(geom, true);
@@ -474,7 +475,7 @@ int main(int argc, char** argv) {
     prog.SetUniform("V", s_cam2.GetModelViewMatrix());
     prog.SetUniform("ToWorld", s_cam2.GetModelViewMatrix().Inverse());
     prog.SetUniform("slant_thr", -1.0f, 1.0f);
-    prog.SetUniform("ttt", 1.0, 0, 0, 1);
+    prog.SetUniform("ttt", 1, 0, 0, 1);
     pangolin::GlDraw(prog, gl_geom, nullptr);
     prog.Unbind();
 
