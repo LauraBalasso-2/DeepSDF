@@ -327,6 +327,7 @@ def main_function(experiment_directory, continue_from, batch_split):
     code_bound = get_spec_with_default(specs, "CodeBound", None)
 
     decoder = arch.Decoder(latent_size, **specs["NetworkSpecs"]).cpu()
+    decoder.double()
 
     logging.info("training with {} CPU(s)".format(os.cpu_count()))
 
@@ -461,6 +462,7 @@ def main_function(experiment_directory, continue_from, batch_split):
 
         for sdf_data, indices in sdf_loader:
 
+
             # Process the input data
             sdf_data = sdf_data.reshape(-1, 4)
 
@@ -513,6 +515,7 @@ def main_function(experiment_directory, continue_from, batch_split):
                 batch_loss += chunk_loss.item()
 
             logging.debug("loss = {}".format(batch_loss))
+            logging.info("loss = {}".format(batch_loss))
 
             loss_log.append(batch_loss)
 
